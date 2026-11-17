@@ -2,30 +2,27 @@
 ## AIM:
 To write a program to predict daily temperature , PM2.5 pollution level and Energy based on environmental sensor data using Random Forest Algorithm.
 
-## Problem Statement and Dataset:
-Environmental parameters such as temperature, humidity, air quality, and energy usage are collected using sensors. The goal is to build a machine learning model that predicts:
-  Temperature
-  PM2.5 level
-  Energy consumption
-using the Random Forest Regression algorithm.
+## Problem Statement and Dataset
+
+
 
 ## Equipments Required:
 1. Hardware – PCs
 2. Anaconda – Python 3.7 Installation / Jupyter notebook
 
 ## Algorithm
-1. Load the dataset and preprocess it by handling missing values and selecting features and target variables.
-2. Split the dataset into training and testing sets.
-3. Train the Random Forest model using the training data.
-4. Predict the outputs using test data and evaluate the model performance.
+1. Load the datasets
+2. Preprocess the data
+3. Train the Random Forest Regressor
+4. predict and Evaluate the results
 
 ## Program:
+```
 /*
-'''
 Program to implement the Random Forest Algorithm to predict daily temperature , PM2.5 pollution level and Energy based on environmental sensor data.
-Developed by: YUVARAJ K
-RegisterNumber: 212224250022
-
+Developed by: Yuvaraj K
+RegisterNumber:212224250022
+*/
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -35,25 +32,31 @@ from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 df = pd.read_csv("weather-station-eee-block_2024_07_13.csv")
 df.columns = df.columns.str.strip()
 
+
 df['time'] = pd.to_datetime(df['time'])
 df = df.sort_values('time').reset_index(drop=True)
+
 
 cols_to_fill = ['tem', 'pm2_5', 'tsr', 'hum', 'pressure', 'wind_speed', 'illumination', 'co2']
 for col in cols_to_fill:
     if col in df.columns:
         df[col] = df[col].interpolate(method='linear', limit=10)
 
+
 df['hour'] = df['time'].dt.hour
 df['hour_sin'] = np.sin(2 * np.pi * df['hour'] / 24)
 df['hour_cos'] = np.cos(2 * np.pi * df['hour'] / 24)
+
 
 targets = ['tem', 'pm2_5', 'tsr']
 for t in targets:
     df[f'{t}_lag1'] = df[t].shift(1)
     df[f'{t}_lag2'] = df[t].shift(2)
 
+
 processed_df = df.dropna(subset=['tem_lag2', 'pm2_5_lag2', 'tsr_lag2', 'hum', 'pressure']).reset_index(drop=True)
 processed_df.to_csv("combined_processed_weather_data.csv", index=False)
+
 
 features = [
     'hum', 'pressure', 'wind_speed', 'illumination', 'co2',
@@ -81,11 +84,13 @@ target_meta = {
 for target in targets:
     y_train, y_test = train[target], test[target]
     
+
     model = RandomForestRegressor(n_estimators=100, max_depth=12, random_state=42)
     model.fit(X_train, y_train)
     
     preds = model.predict(X_test)
     models[target] = model
+    
     
     results[target] = {
         'r2': r2_score(y_test, preds),
@@ -94,12 +99,14 @@ for target in targets:
         'actual': y_test.values
     }
 
+
 fig, axes = plt.subplots(3, 2, figsize=(16, 18))
 
 for i, target in enumerate(targets):
     label, unit, color = target_meta[target]
     res = results[target]
     
+   
     axes[i, 0].plot(res['actual'][-150:], label='Actual', color='black', alpha=0.4, linewidth=2)
     axes[i, 0].plot(res['preds'][-150:], label='Predicted', color=color, linestyle='--', linewidth=2)
     axes[i, 0].set_title(f"{label}: Actual vs Predicted\n$R^2$: {res['r2']:.3f} | MAE: {res['mae']:.2f}")
@@ -107,12 +114,14 @@ for i, target in enumerate(targets):
     axes[i, 0].legend()
     axes[i, 0].grid(True, alpha=0.3)
     
+   
     importances = pd.Series(models[target].feature_importances_, index=features).sort_values()
     importances.plot(kind='barh', ax=axes[i, 1], color=color, alpha=0.7)
     axes[i, 1].set_title(f"Key Drivers: {label}")
 
 plt.tight_layout()
 plt.show()
+
 
 last_row = processed_df.iloc[-1]
 latest_data = pd.DataFrame([{
@@ -126,13 +135,14 @@ print("\n--- NEXT STEP PREDICTIONS (Using Latest Data) ---")
 for target in targets:
     pred_val = models[target].predict(latest_data)[0]
     print(f"Predicted {target_meta[target][0]}: {pred_val:.2f} {target_meta[target][1]}")
-/*
-'''
-
+```
 ## Output:
-<img width="921" height="421" alt="Screenshot 2026-03-21 231110" src="https://github.com/user-attachments/assets/8d98f793-a176-4a12-802a-7cc7acf78e3a" />
-<img width="913" height="336" alt="Screenshot 2026-03-21 231154" src="https://github.com/user-attachments/assets/0634abd7-da04-4df5-91a2-6542f603ee08" />
-<img width="924" height="424" alt="Screenshot 2026-03-21 231228" src="https://github.com/user-attachments/assets/f65abfd6-28d3-431d-b9a7-10e54328a0d7" />
+
+<img width="1453" height="645" alt="image" src="https://github.com/user-attachments/assets/06b93045-1acb-4dbf-a30f-62fe6e088121" />
+
+<img width="1446" height="529" alt="image" src="https://github.com/user-attachments/assets/8cf41c10-e2ac-4857-9b67-21379da6d964" />
+
+<img width="1449" height="647" alt="image" src="https://github.com/user-attachments/assets/b044727c-8d09-41c3-9e2d-292d34b0c086" />
 
 ## Result:
-Thus, the Random Forest algorithm was successfully implemented to predict temperature, PM2.5 levels, and energy consumption using environmental sensor data. The model provides accurate predictions and handles multiple outputs effectively.
+Thus,the program to predict daily temperature , PM2.5 pollution level and Energy based on environmental sensor data using Random Forest Algorithm is verified.
