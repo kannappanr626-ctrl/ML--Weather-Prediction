@@ -21,11 +21,11 @@ using the Random Forest Regression algorithm.
 
 ## Program:
 /*
+'''
 Program to implement the Random Forest Algorithm to predict daily temperature , PM2.5 pollution level and Energy based on environmental sensor data.
 Developed by: YUVARAJ K
 RegisterNumber: 212224250022
 
-```
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -127,7 +127,7 @@ for target in targets:
     pred_val = models[target].predict(latest_data)[0]
     print(f"Predicted {target_meta[target][0]}: {pred_val:.2f} {target_meta[target][1]}")
 /*
-```
+'''
 
 ## Output:
 <img width="921" height="421" alt="Screenshot 2026-03-21 231110" src="https://github.com/user-attachments/assets/8d98f793-a176-4a12-802a-7cc7acf78e3a" />
